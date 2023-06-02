@@ -14,6 +14,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import Spinner from 'react-bootstrap/Spinner';
 import Form from "react-bootstrap/Form";
 const Dashboard = () => {
+    const [mounted, setmounted] = useState(false)
     const { user } = useContext(userContext);
     const { url } = useContext(urlContext);
     const [studentData, setStudentData] = useState(null);
@@ -142,6 +143,7 @@ const Dashboard = () => {
             const respo6 = await fetch(url + "/student/get-undertime/" + user)
             const jData6 = await respo6.json();
             setunderTimeHrs(jData6)
+            setmounted(true);
         } catch (err) {
             console.error(err.message);
         }
@@ -195,7 +197,9 @@ const Dashboard = () => {
         return `${month}/${day}/${year}`;
     }
     useEffect(() => {
-        loadData()
+        if (user) {
+            loadData()
+        }
     }, [user, url])
     useEffect(() => {
         if (databaseTime) {
@@ -227,7 +231,7 @@ const Dashboard = () => {
     }, []);
     return (
         <div>
-            <Container style={{ display: 'flex', width: '100%' }}>
+            {mounted ? (<> <Container style={{ display: 'flex', width: '100%' }}>
                 <Row>
                     <Col>
                         <Card style={{ width: '40rem', height: '10rem', marginTop: '20px' }}>
@@ -382,107 +386,109 @@ const Dashboard = () => {
 
                 </Row>
             </Container >
-            <Card className='bottom-table-card'>
-                <Card.Body>
-                    <Col xs={12}>
+                <Card className='bottom-table-card'>
+                    <Card.Body>
+                        <Col xs={12}>
 
-                        <Container>
-                            <Row>
-                                <Col>
-                                    <h1>
-                                        Time and Attendance Monitoring
-                                    </h1>
-                                </Col>
-                                <Col>
-                                    <Card style={{ width: '40rem', marginTop: '5px' }}>
-                                        <Card.Body>
-                                            <Col xs={12}>
-                                                <Container>
-                                                    <Row>
-                                                        <Col>
-                                                            <Card.Subtitle className="mb-1 text-muted">Payroll Coverage</Card.Subtitle>
-                                                        </Col>
-                                                        <Col>
-                                                            <Form.Control value={startDate} onChange={(e) => setstartDate(e.target.value)} type="date"></Form.Control>
-                                                        </Col>
-                                                        <Col>
-                                                            <Form.Control value={endDate} onChange={(e) => setendDate(e.target.value)} type="date"></Form.Control>
-                                                        </Col>
-                                                    </Row>
-                                                </Container>
-                                            </Col>
-                                        </Card.Body>
-                                    </Card>
-                                </Col>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <h1>
+                                            Time and Attendance Monitoring
+                                        </h1>
+                                    </Col>
+                                    <Col>
+                                        <Card style={{ width: '40rem', marginTop: '5px' }}>
+                                            <Card.Body>
+                                                <Col xs={12}>
+                                                    <Container>
+                                                        <Row>
+                                                            <Col>
+                                                                <Card.Subtitle className="mb-1 text-muted">Payroll Coverage</Card.Subtitle>
+                                                            </Col>
+                                                            <Col>
+                                                                <Form.Control value={startDate} onChange={(e) => setstartDate(e.target.value)} type="date"></Form.Control>
+                                                            </Col>
+                                                            <Col>
+                                                                <Form.Control value={endDate} onChange={(e) => setendDate(e.target.value)} type="date"></Form.Control>
+                                                            </Col>
+                                                        </Row>
+                                                    </Container>
+                                                </Col>
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
 
-                            </Row>
-                        </Container>
-                        <Table className='details-table' striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Time IN</th>
-                                    <th>Time Out</th>
-                                    <th>No. Hours</th>
-                                    <th>Required Hours </th>
-                                    <th>Overtime Hours</th>
-                                    <th>Remarks</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {reportData.map((value, index) => (
-                                    <tr key={index}>
-                                        <td>{epochToDate(Number(value.date))}</td>
-                                        <td>{value.time_in ? extractTime(value.time_in) : '--:--:--'}</td>
-                                        <td>{value.time_out ? extractTime(value.time_out) : '--:--:--'}</td>
-                                        <td>{value.no_of_hrs || '-'}</td>
-                                        <td>{value.required_no_hrs || '-'}</td>
-                                        <td>{value.overtime || '-'}</td>
-                                        <td>{remarksMaker(value)}</td>
+                                </Row>
+                            </Container>
+                            <Table className='details-table' striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time IN</th>
+                                        <th>Time Out</th>
+                                        <th>No. Hours</th>
+                                        <th>Required Hours </th>
+                                        <th>Overtime Hours</th>
+                                        <th>Remarks</th>
                                     </tr>
-                                ))}
+                                </thead>
+                                <tbody>
+                                    {reportData.length !== 0 && reportData.map((value, index) => (
+                                        <tr key={index}>
+                                            <td>{epochToDate(Number(value.date))}</td>
+                                            <td>{value.time_in ? extractTime(value.time_in) : '--:--:--'}</td>
+                                            <td>{value.time_out ? extractTime(value.time_out) : '--:--:--'}</td>
+                                            <td>{value.no_of_hrs || '-'}</td>
+                                            <td>{value.required_no_hrs || '-'}</td>
+                                            <td>{Number(value.overtime).toFixed(2) || '-'}</td>
+                                            <td>{remarksMaker(value)}</td>
+                                        </tr>
+                                    ))}
 
-                            </tbody>
-                        </Table>
+                                </tbody>
+                            </Table>
 
-                    </Col>
-                </Card.Body>
-            </Card>
-            <Container>
-                <Row>
-                    <Col>
-                        <Card style={{ marginTop: '5px' }}>
-                            <Card.Body>
-                                <Col xs={9}>
-                                    <Card.Subtitle className="mb-1 text-muted">Total No of Hours {startDate && endDate ? formatDate(startDate) + ' - ' + formatDate(endDate) : ''}</Card.Subtitle>
-                                    <Card.Title style={{ fontSize: '30px' }}>{totalHrs ? totalHrs.sum : 0}hrs</Card.Title>
-                                </Col>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col>
-                        <Card style={{ marginTop: '5px' }}>
-                            <Card.Body>
-                                <Col xs={9}>
-                                    <Card.Subtitle className="mb-1 text-muted">Hours Deducted</Card.Subtitle>
-                                    <Card.Title style={{ fontSize: '30px' }}>0</Card.Title>
-                                </Col>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col>
+                        </Col>
+                    </Card.Body>
+                </Card>
+                <Container>
+                    <Row>
+                        <Col>
+                            <Card style={{ marginTop: '5px' }}>
+                                <Card.Body>
+                                    <Col xs={9}>
+                                        <Card.Subtitle className="mb-1 text-muted">Total No of Hours {startDate && endDate ? formatDate(startDate) + ' - ' + formatDate(endDate) : ''}</Card.Subtitle>
+                                        <Card.Title style={{ fontSize: '30px' }}>{totalHrs ? totalHrs.sum : 0}hrs</Card.Title>
+                                    </Col>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col>
+                            <Card style={{ marginTop: '5px' }}>
+                                <Card.Body>
+                                    <Col xs={9}>
+                                        <Card.Subtitle className="mb-1 text-muted">Hours Deducted</Card.Subtitle>
+                                        <Card.Title style={{ fontSize: '30px' }}>0</Card.Title>
+                                    </Col>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col>
 
-                        <Card style={{ marginTop: '5px' }}>
-                            <Card.Body>
-                                <Col xs={9}>
-                                    <Card.Subtitle className="mb-1 text-muted">Final No of Hours {startDate && endDate ? formatDate(startDate) + ' - ' + formatDate(endDate) : ''}</Card.Subtitle>
-                                    <Card.Title style={{ fontSize: '30px' }}>{totalHrs ? totalHrs.sum : 0}hrs</Card.Title>
-                                </Col>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-            </Container>
+                            <Card style={{ marginTop: '5px' }}>
+                                <Card.Body>
+                                    <Col xs={9}>
+                                        <Card.Subtitle className="mb-1 text-muted">Final No of Hours {startDate && endDate ? formatDate(startDate) + ' - ' + formatDate(endDate) : ''}</Card.Subtitle>
+                                        <Card.Title style={{ fontSize: '30px' }}>{totalHrs ? totalHrs.sum : 0}hrs</Card.Title>
+                                    </Col>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
+                </Container></>) : (<><Container style={{ display: 'flex', width: '100%', height: '100vh' }}>
+                    <div>Loading...</div>
+                </Container> </>)}
         </div >
     )
 }
