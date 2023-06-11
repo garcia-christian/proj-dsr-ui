@@ -1,14 +1,23 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState, useContext } from "react";
+import { Navigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 import { Col, Button, Row, Container, Card, Form } from "react-bootstrap";
 import { urlContext } from '../Context/urlContext';
+
+
 const Login = ({ setAuthent }) => {
     const { url } = useContext(urlContext);
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
+    const [loginstatus, setloginstatus] = useState(false)
 
 
     const onSubmitForm = async (e) => {
-        e.preventDefault();
+        const loadToast = toast.loading('Please Wait...')
+      //      e.preventDefault();
+        setloginstatus(true)
+
+
         try {
             const body = { email, password }
 
@@ -23,26 +32,36 @@ const Login = ({ setAuthent }) => {
             if (parseRes.access) {
                 localStorage.setItem("token", parseRes.access)
                 setAuthent(true)
+                setloginstatus(false)
+
+
 
             } else {
                 if (email == "") {
+                    toast.error("Input Email")
+                    setloginstatus(false)
+
 
 
                 } else if (password == "") {
-
+                    toast.error("Input Password")
                 } else {
                     setAuthent(false)
-                    if (parseRes == 'Invalid Password') {
+                    toast.error(parseRes)
+                    setloginstatus(false)
 
-                    }
+
+
                 }
 
             }
 
-
+            toast.dismiss(loadToast)
 
         } catch (error) {
             console.error(error.message)
+            setloginstatus(false)
+            toast.dismiss(loadToast)
 
         }
 
@@ -82,7 +101,7 @@ const Login = ({ setAuthent }) => {
 
                                             </Form.Group>
                                             <div className="d-grid">
-                                                <Button onClick={onSubmitForm} variant="primary" type="submit">
+                                                <Button disabled={loginstatus} onClick={onSubmitForm} variant="primary" type="submit">
                                                     Login
                                                 </Button>
                                             </div>
@@ -90,9 +109,12 @@ const Login = ({ setAuthent }) => {
                                         <div className="mt-3">
                                             <p className="mb-0  text-center">
                                                 Don't have an account?{" "}
-                                                <a href="{''}" className="text-primary fw-bold">
+
+                                                <a href="/register" className="text-primary fw-bold">
                                                     Sign Up
                                                 </a>
+
+
                                             </p>
                                         </div>
                                     </div>

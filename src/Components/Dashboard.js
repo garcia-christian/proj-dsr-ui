@@ -75,6 +75,8 @@ const Dashboard = () => {
         const seconds = date.getSeconds().toString().padStart(2, '0');
         return `${hours}:${minutes}:${seconds}`
     }
+
+
     function epochToDate(epoch) {
         const date = new Date(epoch);
 
@@ -229,6 +231,8 @@ const Dashboard = () => {
             clearInterval(intervalId);
         };
     }, []);
+
+
     return (
         <div>
             {mounted ? (<> <Container style={{ display: 'flex', width: '100%' }}>
@@ -459,28 +463,19 @@ const Dashboard = () => {
                                 <Card.Body>
                                     <Col xs={9}>
                                         <Card.Subtitle className="mb-1 text-muted">Total No of Hours {startDate && endDate ? formatDate(startDate) + ' - ' + formatDate(endDate) : ''}</Card.Subtitle>
-                                        <Card.Title style={{ fontSize: '30px' }}>{totalHrs ? totalHrs.sum : 0}hrs</Card.Title>
+                                        <Card.Title style={{ fontSize: '30px' }}>{totalHrs.sum ? totalHrs.sum : 0}hrs</Card.Title>
                                     </Col>
                                 </Card.Body>
                             </Card>
                         </Col>
-                        <Col>
-                            <Card style={{ marginTop: '5px' }}>
-                                <Card.Body>
-                                    <Col xs={9}>
-                                        <Card.Subtitle className="mb-1 text-muted">Hours Deducted</Card.Subtitle>
-                                        <Card.Title style={{ fontSize: '30px' }}>0</Card.Title>
-                                    </Col>
-                                </Card.Body>
-                            </Card>
-                        </Col>
+
                         <Col>
 
                             <Card style={{ marginTop: '5px' }}>
                                 <Card.Body>
                                     <Col xs={9}>
                                         <Card.Subtitle className="mb-1 text-muted">Final No of Hours {startDate && endDate ? formatDate(startDate) + ' - ' + formatDate(endDate) : ''}</Card.Subtitle>
-                                        <Card.Title style={{ fontSize: '30px' }}>{totalHrs ? totalHrs.sum : 0}hrs</Card.Title>
+                                        <Card.Title style={{ fontSize: '30px' }}>{totalHrs.sum ? totalHrs.sum : 0}hrs</Card.Title>
                                     </Col>
                                 </Card.Body>
                             </Card>
